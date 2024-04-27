@@ -447,7 +447,7 @@ class goproControl:
                     log.error("Unrecognized command %s" % cmd)
 
 
-    def runForSeconds(seconds):
+    def runForSeconds(self, seconds):
         print('hello')
 
 
