@@ -8,6 +8,7 @@ import argparse
 import signal
 from prettytable import PrettyTable
 from goprocam import constants
+from time import sleep
 
 class goproControl:
 
@@ -472,7 +473,10 @@ class goproControl:
 
 
     def runForSeconds(self, seconds):
-        self.run(address, '')
+        self.run(address, self.COMMAND_START_RECORD, True)
+        time.sleep(seconds)
+        self.run(address, self.COMMAND_STOP_RECORD, True)
+
 
     def __init__ (self):
         loop = asyncio.get_event_loop()
