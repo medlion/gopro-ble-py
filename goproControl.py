@@ -473,8 +473,11 @@ class goproControl:
 
 
     def runForSeconds(self, seconds):
-        self.run(address, self.COMMAND_START_RECORD, True)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.run(address, self.COMMAND_START_RECORD, True))
+        print('Starting sleep')
         sleep(seconds)
+        print('Waking up')
         self.run(address, self.COMMAND_STOP_RECORD, True)
 
 
