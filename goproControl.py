@@ -474,7 +474,7 @@ class goproControl:
 
     def runForSeconds(self, seconds):
         self.run(address, self.COMMAND_START_RECORD, True)
-        time.sleep(seconds)
+        sleep(seconds)
         self.run(address, self.COMMAND_STOP_RECORD, True)
 
 
