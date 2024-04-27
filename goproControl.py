@@ -335,7 +335,7 @@ class goproControl:
     async def run(self, address, command_to_run=None, is_verbose=True):
         log = logging.getLogger(__name__)
         log.setLevel(logging.DEBUG if is_verbose else logging.WARNING)
-        log.warning(address)
+        log.debug("Starting command %s" % command_to_run)
         async with BleakClient(address) as client:
             def callback(sender: int, data: bytearray):
                 log.warning(colored("{}: {}".format(sender, data.hex()), "green"))
