@@ -1,3 +1,5 @@
 import goproControl
 
-goproControl.runForSeconds(10)
+gpc = new goproControl.goproControl()
+
+gpc.runForSeconds(10)
