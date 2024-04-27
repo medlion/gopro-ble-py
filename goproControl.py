@@ -28,13 +28,16 @@ class goproControl:
     },  # SSID
     }
 
+    COMMAND_START_RECORD = 'record start'
+    COMMAND_STOP_RECORD = 'record stop'
+
     commands_supported = {
 
         "command": {
-            "record start": {
+            COMMAND_START_RECORD: {
                 "value": commands.Commands.Shutter.Start,
             },
-            "record stop": {
+            COMMAND_STOP_RECORD: {
                 "value": commands.Commands.Shutter.Stop,
             },
             "mode video": {
@@ -469,7 +472,7 @@ class goproControl:
 
 
     def runForSeconds(self, seconds):
-        print('hello')
+        self.run(address, '')
 
     def __init__ (self):
         loop = asyncio.get_event_loop()
