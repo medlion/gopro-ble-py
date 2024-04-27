@@ -446,8 +446,36 @@ class goproControl:
                 else:
                     log.error("Unrecognized command %s" % cmd)
 
+    async def discovercameras():
+        cameras = []
+        devices = await discover()
+        global address
+        for d in devices:
+
+            if "GoPro" in str(d):
+                cameras.append(["GoPro", d.address])
+        if len(cameras) == 0:
+            print("No cameras detected.")
+            exit()
+        if len(cameras) == 1:
+            print(colored("Connecting to " +
+                            cameras[0][1], "green", attrs=["bold"]))
+            address = [cameras[0][1]]
+        else:
+            for index, i in enumerate(cameras):
+                print(
+                    colored("[{}] {} - {}".format(index, i[0], i[1]), "cyan"))
+            address = [cameras[int(input(">>> "))][1]]
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(discovercameras())
+
 
     def runForSeconds(self, seconds):
         print('hello')
+
+    def __init__ (self):
+        self.discovercameras()
+
 
 
