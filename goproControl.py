@@ -335,7 +335,6 @@ class goproControl:
     async def run(self, address, command_to_run=None, is_verbose=True):
         log = logging.getLogger(__name__)
         log.setLevel(logging.DEBUG if is_verbose else logging.WARNING)
-        log.warning(address)
         async with BleakClient(address) as client:
             def callback(sender: int, data: bytearray):
                 log.warning(colored("{}: {}".format(sender, data.hex()), "green"))
@@ -371,7 +370,7 @@ class goproControl:
                 await client.write_gatt_char(commands.Characteristics.ControlCharacteristic, start_mode)
             await client.write_gatt_char(commands.Characteristics.ControlCharacteristic, commands.Commands.Analytics.SetThirdPartyClient)
             await asyncio.sleep(1.0)
-            signal.signal(signal.SIGINT, handle_exit)
+            signal.signal(signal.SIGINT, self.handle_exit)
     
             if command_to_run is not None:
                 if command_to_run in commands_supported["command"]:
