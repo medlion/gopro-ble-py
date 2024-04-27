@@ -10,320 +10,322 @@ from prettytable import PrettyTable
 from goprocam import constants
 from time import sleep
 
-class goproControl:
+camera_info_chars = {"00002a00-0000-1000-8000-00805f9b34fb": {
+    "name": "Camera ID"
+},  # Camera ID
+    commands.Characteristics.BatteryLevel: {
+    "name": "Battery Level"
+},  # Battery Level
+    commands.Characteristics.SerialNumber: {
+    "name": "Serial Number"
+},  # Serial
+    commands.Characteristics.FirmwareVersion: {
+    "name": "Firmware Version"
+},  # Firmware version
+    "b5f90002-aa8d-11e3-9046-0002a5d5c51b": {
+        "name": "WiFi SSID"
+},  # SSID
+}
 
-    camera_info_chars = {"00002a00-0000-1000-8000-00805f9b34fb": {
-        "name": "Camera ID"
-    },  # Camera ID
-        commands.Characteristics.BatteryLevel: {
-        "name": "Battery Level"
-    },  # Battery Level
-        commands.Characteristics.SerialNumber: {
-        "name": "Serial Number"
-    },  # Serial
-        commands.Characteristics.FirmwareVersion: {
-        "name": "Firmware Version"
-    },  # Firmware version
-        "b5f90002-aa8d-11e3-9046-0002a5d5c51b": {
-            "name": "WiFi SSID"
-    },  # SSID
-    }
+COMMAND_START_RECORD = 'record start'
+COMMAND_STOP_RECORD = 'record stop'
 
-    COMMAND_START_RECORD = 'record start'
-    COMMAND_STOP_RECORD = 'record stop'
+commands_supported = {
 
-    commands_supported = {
+    "command": {
+        COMMAND_START_RECORD: {
+            "value": commands.Commands.Shutter.Start,
+        },
+        COMMAND_STOP_RECORD: {
+            "value": commands.Commands.Shutter.Stop,
+        },
+        "mode video": {
+            "value": commands.Commands.Mode.Video,
+        },
+        "mode photo": {
+            "value": commands.Commands.Mode.Photo,
+        },
+        "mode multishot": {
+            "value": commands.Commands.Mode.Multishot,
+        },
+        "mode video single":{
+            "value": commands.Commands.Submode.Video.Single
+        },
+        "mode video timelapse":{
+            "value": commands.Commands.Submode.Video.TimeLapse
+        },
+        "mode photo single":{
+            "value": commands.Commands.Submode.Photo.Single
+        },
+        "mode photo night":{
+            "value": commands.Commands.Submode.Photo.Night
+        },
+        "mode multishot burst":{
+            "value": commands.Commands.Submode.Multishot.Burst
+        },
+        "mode multishot timelapse":{
+            "value": commands.Commands.Submode.Multishot.TimeLapse
+        },
+        "mode multishot nightlapse":{
+            "value": commands.Commands.Submode.Multishot.NightLapse
+        },
+        "poweroff": {
+            "value": commands.Commands.Basic.PowerOff,
+        },
+        "poweroff-force": {
+            "value": commands.Commands.Basic.PowerOffForce,
+        },
+        "tag": {
+            "value": commands.Commands.Basic.HiLightTag,
+        },
+        "locate on": {
+            "value": commands.Commands.Locate.ON,
+        },
+        "locate off": {
+            "value": commands.Commands.Locate.OFF,
+        },
+        "wifi on": {
+            "value": commands.Commands.WiFi.ON,
+        },
+        "wifi off": {
+            "value": commands.Commands.WiFi.OFF,
+        },
 
-        "command": {
-            COMMAND_START_RECORD: {
-                "value": commands.Commands.Shutter.Start,
-            },
-            COMMAND_STOP_RECORD: {
-                "value": commands.Commands.Shutter.Stop,
-            },
-            "mode video": {
-                "value": commands.Commands.Mode.Video,
-            },
-            "mode photo": {
-                "value": commands.Commands.Mode.Photo,
-            },
-            "mode multishot": {
-                "value": commands.Commands.Mode.Multishot,
-            },
-            "mode video single":{
-                "value": commands.Commands.Submode.Video.Single
-            },
-            "mode video timelapse":{
-                "value": commands.Commands.Submode.Video.TimeLapse
-            },
-            "mode photo single":{
-                "value": commands.Commands.Submode.Photo.Single
-            },
-            "mode photo night":{
-                "value": commands.Commands.Submode.Photo.Night
-            },
-            "mode multishot burst":{
-                "value": commands.Commands.Submode.Multishot.Burst
-            },
-            "mode multishot timelapse":{
-                "value": commands.Commands.Submode.Multishot.TimeLapse
-            },
-            "mode multishot nightlapse":{
-                "value": commands.Commands.Submode.Multishot.NightLapse
-            },
-            "poweroff": {
-                "value": commands.Commands.Basic.PowerOff,
-            },
-            "poweroff-force": {
-                "value": commands.Commands.Basic.PowerOffForce,
-            },
-            "tag": {
-                "value": commands.Commands.Basic.HiLightTag,
-            },
-            "locate on": {
-                "value": commands.Commands.Locate.ON,
-            },
-            "locate off": {
-                "value": commands.Commands.Locate.OFF,
-            },
-            "wifi on": {
-                "value": commands.Commands.WiFi.ON,
-            },
-            "wifi off": {
-                "value": commands.Commands.WiFi.OFF,
-            },
-    
-            # OpenGoPro-spec commands
-            "preset activity": {
-                "value": commands.Commands.Presets.Activity
-            },
-            "preset burst": {
-                "value": commands.Commands.Presets.BurstPhoto
-            },
-            "preset cinematic": {
-                "value": commands.Commands.Presets.Cinematic
-            },
-            "preset liveburst": {
-                "value": commands.Commands.Presets.LiveBurst
-            },
-            "preset nightphoto": {
-                "value": commands.Commands.Presets.NightPhoto
-            },
-            "preset nightlapse": {
-                "value": commands.Commands.Presets.NightLapse
-            },
-            "preset photo": {
-                "value": commands.Commands.Presets.Photo
-            },
-            "preset slomo": {
-                "value": commands.Commands.Presets.SloMo
-            },
-            "preset standard": {
-                "value": commands.Commands.Presets.Standard
-            },
-            "preset timelapse": {
-                "value": commands.Commands.Presets.TimeLapse
-            },
-            "preset timewarp": {
-                "value": commands.Commands.Presets.TimeWarp
-            },
-            "preset maxphoto": {
-                "value": commands.Commands.Presets.MaxPhoto
-            },
-            "preset maxtimewarp": {
-                "value": commands.Commands.Presets.MaxTimewarp
-            },
-            "preset maxvideo": {
-                "value": commands.Commands.Presets.MaxVideo
-            },
-            "preset group video": {
-                "value": commands.Commands.PresetGroups.Video
-            },
-            "preset group photo": {
-                "value": commands.Commands.PresetGroups.Photo
-            },
-            "preset group multishot": {
-                "value": commands.Commands.PresetGroups.Timelapse
-            },
-            "turbo on": {
-                "value": commands.Commands.Turbo.ON
-            },
-            "turbo off": {
-                "value": commands.Commands.Turbo.OFF
-            }
+        # OpenGoPro-spec commands
+        "preset activity": {
+            "value": commands.Commands.Presets.Activity
+        },
+        "preset burst": {
+            "value": commands.Commands.Presets.BurstPhoto
+        },
+        "preset cinematic": {
+            "value": commands.Commands.Presets.Cinematic
+        },
+        "preset liveburst": {
+            "value": commands.Commands.Presets.LiveBurst
+        },
+        "preset nightphoto": {
+            "value": commands.Commands.Presets.NightPhoto
+        },
+        "preset nightlapse": {
+            "value": commands.Commands.Presets.NightLapse
+        },
+        "preset photo": {
+            "value": commands.Commands.Presets.Photo
+        },
+        "preset slomo": {
+            "value": commands.Commands.Presets.SloMo
+        },
+        "preset standard": {
+            "value": commands.Commands.Presets.Standard
+        },
+        "preset timelapse": {
+            "value": commands.Commands.Presets.TimeLapse
+        },
+        "preset timewarp": {
+            "value": commands.Commands.Presets.TimeWarp
+        },
+        "preset maxphoto": {
+            "value": commands.Commands.Presets.MaxPhoto
+        },
+        "preset maxtimewarp": {
+            "value": commands.Commands.Presets.MaxTimewarp
+        },
+        "preset maxvideo": {
+            "value": commands.Commands.Presets.MaxVideo
+        },
+        "preset group video": {
+            "value": commands.Commands.PresetGroups.Video
+        },
+        "preset group photo": {
+            "value": commands.Commands.PresetGroups.Photo
+        },
+        "preset group multishot": {
+            "value": commands.Commands.PresetGroups.Timelapse
+        },
+        "turbo on": {
+            "value": commands.Commands.Turbo.ON
+        },
+        "turbo off": {
+            "value": commands.Commands.Turbo.OFF
         }
     }
+}
 
-    settings_supported = {
-        "video": {
-            "resolution": {
-                "first": constants.Video.RESOLUTION,
-                "contents": "constants.Video.Resolution",
-                "prefix": "R"
-            },
-            "framerate": {
-                "first": constants.Video.FRAME_RATE,
-                "contents": "constants.Video.FrameRate",
-                "prefix": "FR"
-            },
-            "fov": {
-                "first": constants.Video.FOV,
-                "contents": "constants.Video.Fov",
-                "prefix": ""
-            },
-            # "aspect_ratio": {
-            # 	"first": constants.Video.ASPECT_RATIO,
-            # 	"contents": "constants.Video.AspectRatio",
-            # 	"prefix": "AP"
-            # },
-            "lowlight": {
-                "first": constants.Video.LOW_LIGHT,
-                "contents": "constants.Video.LowLight",
-                "prefix": ""
-            },
-            # "hypersmooth": {
-            # 	"first": constants.Video.HYPERSMOOTH,
-            # 	"contents": "constants.Video.Hypersmooth",
-            # 	"prefix": ""
-            # },
-            # "lens": {
-            # 	"first": constants.Video.LENS,
-            # 	"contents": "constants.Video.Lens",
-            # 	"prefix": ""
-            # },
-            "protune": {
-                "first": constants.Video.PROTUNE_VIDEO,
-                "contents": "constants.Video.ProTune",
-                "prefix": ""
-            },
-            "white_balance": {
-                "first": constants.Video.WHITE_BALANCE,
-                "contents": "constants.Video.WhiteBalance",
-                "prefix": "WB"
-            },
-            "color": {
-                "first": constants.Video.COLOR,
-                "contents": "constants.Video.Color",
-                "prefix": ""
-            },
-            "iso_limit": {
-                "first": constants.Video.ISO_LIMIT,
-                "contents": "constants.Video.IsoLimit",
-                "prefix": "ISO"
-            },
-            "sharpness": {
-                "first": constants.Video.SHARPNESS,
-                "contents": "constants.Video.Sharpness",
-                "prefix": ""
-            },
+settings_supported = {
+    "video": {
+        "resolution": {
+            "first": constants.Video.RESOLUTION,
+            "contents": "constants.Video.Resolution",
+            "prefix": "R"
         },
-        "photo": {
-            "resolution": {
-                "first": constants.Photo.RESOLUTION,
-                "contents": "constants.Photo.Resolution",
-                "prefix": "R"
-            },
-            "raw": {
-                "first": constants.Photo.RAW_PHOTO,
-                "contents": "constants.Photo.RawPhoto",
-                "prefix": ""
-            },
-            "superphoto": {
-                "first": constants.Photo.SUPER_PHOTO,
-                "contents": "constants.Photo.SuperPhoto",
-                "prefix": ""
-            },
-            "protune": {
-                "first": constants.Photo.PROTUNE_PHOTO,
-                "contents": "constants.Photo.ProTune",
-                "prefix": ""
-            },
-            "white_balance": {
-                "first": constants.Photo.WHITE_BALANCE,
-                "contents": "constants.Photo.WhiteBalance",
-                "prefix": "WB"
-            },
-            "color": {
-                "first": constants.Photo.COLOR,
-                "contents": "constants.Photo.Color",
-                "prefix": ""
-            },
-            "iso_limit": {
-                "first": constants.Photo.ISO_LIMIT,
-                "contents": "constants.Photo.IsoLimit",
-                "prefix": "ISO"
-            },
-            "iso_min": {
-                "first": constants.Photo.ISO_MIN,
-                "contents": "constants.Photo.IsoMin",
-                "prefix": "ISO"
-            },
-            "sharpness": {
-                "first": constants.Photo.SHARPNESS,
-                "contents": "constants.Photo.Sharpness",
-                "prefix": ""
-            },
+        "framerate": {
+            "first": constants.Video.FRAME_RATE,
+            "contents": "constants.Video.FrameRate",
+            "prefix": "FR"
         },
-        "multishot": {
-            "resolution": {
-                "first": constants.Multishot.RESOLUTION,
-                "contents": "constants.Multishot.Resolution",
-                "prefix": "R"
-            },
-            "nightlapse_exp": {
-                "first": constants.Multishot.NIGHT_LAPSE_EXP,
-                "contents": "constants.Multishot.NightLapseExp",
-                "prefix": "Exp"
-            },
-            "nightlapse_interval": {
-                "first": constants.Multishot.NIGHT_LAPSE_INTERVAL,
-                "contents": "constants.Multishot.NightLapseInterval",
-                "prefix": "I"
-            },
-            "timelapse_interval": {
-                "first": constants.Multishot.TIMELAPSE_INTERVAL,
-                "contents": "constants.Multishot.TimeLapseInterval",
-                "prefix": "I"
-            },
-            "burst_rate": {
-                "first": constants.Multishot.BURST_RATE,
-                "contents": "constants.Multishot.BurstRate",
-                "prefix": "B"
-            },
-            "protune": {
-                "first": constants.Multishot.PROTUNE_MULTISHOT,
-                "contents": "constants.Multishot.ProTune",
-                "prefix": ""
-            },
-            "white_balance": {
-                "first": constants.Multishot.WHITE_BALANCE,
-                "contents": "constants.Multishot.WhiteBalance",
-                "prefix": "WB"
-            },
-            "color": {
-                "first": constants.Multishot.COLOR,
-                "contents": "constants.Multishot.Color",
-                "prefix": ""
-            },
-            "iso_limit": {
-                "first": constants.Multishot.ISO_LIMIT,
-                "contents": "constants.Multishot.IsoLimit",
-                "prefix": "ISO"
-            },
-            "iso_min": {
-                "first": constants.Multishot.ISO_MIN,
-                "contents": "constants.Multishot.IsoMin",
-                "prefix": "ISO"
-            },
-            "sharpness": {
-                "first": constants.Multishot.SHARPNESS,
-                "contents": "constants.Multishot.Sharpness",
-                "prefix": ""
-            },
+        "fov": {
+            "first": constants.Video.FOV,
+            "contents": "constants.Video.Fov",
+            "prefix": ""
         },
-    }
+        # "aspect_ratio": {
+        # 	"first": constants.Video.ASPECT_RATIO,
+        # 	"contents": "constants.Video.AspectRatio",
+        # 	"prefix": "AP"
+        # },
+        "lowlight": {
+            "first": constants.Video.LOW_LIGHT,
+            "contents": "constants.Video.LowLight",
+            "prefix": ""
+        },
+        # "hypersmooth": {
+        # 	"first": constants.Video.HYPERSMOOTH,
+        # 	"contents": "constants.Video.Hypersmooth",
+        # 	"prefix": ""
+        # },
+        # "lens": {
+        # 	"first": constants.Video.LENS,
+        # 	"contents": "constants.Video.Lens",
+        # 	"prefix": ""
+        # },
+        "protune": {
+            "first": constants.Video.PROTUNE_VIDEO,
+            "contents": "constants.Video.ProTune",
+            "prefix": ""
+        },
+        "white_balance": {
+            "first": constants.Video.WHITE_BALANCE,
+            "contents": "constants.Video.WhiteBalance",
+            "prefix": "WB"
+        },
+        "color": {
+            "first": constants.Video.COLOR,
+            "contents": "constants.Video.Color",
+            "prefix": ""
+        },
+        "iso_limit": {
+            "first": constants.Video.ISO_LIMIT,
+            "contents": "constants.Video.IsoLimit",
+            "prefix": "ISO"
+        },
+        "sharpness": {
+            "first": constants.Video.SHARPNESS,
+            "contents": "constants.Video.Sharpness",
+            "prefix": ""
+        },
+    },
+    "photo": {
+        "resolution": {
+            "first": constants.Photo.RESOLUTION,
+            "contents": "constants.Photo.Resolution",
+            "prefix": "R"
+        },
+        "raw": {
+            "first": constants.Photo.RAW_PHOTO,
+            "contents": "constants.Photo.RawPhoto",
+            "prefix": ""
+        },
+        "superphoto": {
+            "first": constants.Photo.SUPER_PHOTO,
+            "contents": "constants.Photo.SuperPhoto",
+            "prefix": ""
+        },
+        "protune": {
+            "first": constants.Photo.PROTUNE_PHOTO,
+            "contents": "constants.Photo.ProTune",
+            "prefix": ""
+        },
+        "white_balance": {
+            "first": constants.Photo.WHITE_BALANCE,
+            "contents": "constants.Photo.WhiteBalance",
+            "prefix": "WB"
+        },
+        "color": {
+            "first": constants.Photo.COLOR,
+            "contents": "constants.Photo.Color",
+            "prefix": ""
+        },
+        "iso_limit": {
+            "first": constants.Photo.ISO_LIMIT,
+            "contents": "constants.Photo.IsoLimit",
+            "prefix": "ISO"
+        },
+        "iso_min": {
+            "first": constants.Photo.ISO_MIN,
+            "contents": "constants.Photo.IsoMin",
+            "prefix": "ISO"
+        },
+        "sharpness": {
+            "first": constants.Photo.SHARPNESS,
+            "contents": "constants.Photo.Sharpness",
+            "prefix": ""
+        },
+    },
+    "multishot": {
+        "resolution": {
+            "first": constants.Multishot.RESOLUTION,
+            "contents": "constants.Multishot.Resolution",
+            "prefix": "R"
+        },
+        "nightlapse_exp": {
+            "first": constants.Multishot.NIGHT_LAPSE_EXP,
+            "contents": "constants.Multishot.NightLapseExp",
+            "prefix": "Exp"
+        },
+        "nightlapse_interval": {
+            "first": constants.Multishot.NIGHT_LAPSE_INTERVAL,
+            "contents": "constants.Multishot.NightLapseInterval",
+            "prefix": "I"
+        },
+        "timelapse_interval": {
+            "first": constants.Multishot.TIMELAPSE_INTERVAL,
+            "contents": "constants.Multishot.TimeLapseInterval",
+            "prefix": "I"
+        },
+        "burst_rate": {
+            "first": constants.Multishot.BURST_RATE,
+            "contents": "constants.Multishot.BurstRate",
+            "prefix": "B"
+        },
+        "protune": {
+            "first": constants.Multishot.PROTUNE_MULTISHOT,
+            "contents": "constants.Multishot.ProTune",
+            "prefix": ""
+        },
+        "white_balance": {
+            "first": constants.Multishot.WHITE_BALANCE,
+            "contents": "constants.Multishot.WhiteBalance",
+            "prefix": "WB"
+        },
+        "color": {
+            "first": constants.Multishot.COLOR,
+            "contents": "constants.Multishot.Color",
+            "prefix": ""
+        },
+        "iso_limit": {
+            "first": constants.Multishot.ISO_LIMIT,
+            "contents": "constants.Multishot.IsoLimit",
+            "prefix": "ISO"
+        },
+        "iso_min": {
+            "first": constants.Multishot.ISO_MIN,
+            "contents": "constants.Multishot.IsoMin",
+            "prefix": "ISO"
+        },
+        "sharpness": {
+            "first": constants.Multishot.SHARPNESS,
+            "contents": "constants.Multishot.Sharpness",
+            "prefix": ""
+        },
+    },
+}
 
-    start_mode = commands.Commands.Mode.Video
+start_mode = commands.Commands.Mode.Video
+
+class goproControl:
+
+
 
     def handle_exit(signal, frame):
         print("\n\nExiting program. Safe flights.")
@@ -333,6 +335,7 @@ class goproControl:
     async def run(self, address, command_to_run=None, is_verbose=True):
         log = logging.getLogger(__name__)
         log.setLevel(logging.DEBUG if is_verbose else logging.WARNING)
+        log.warning(address)
         async with BleakClient(address) as client:
             def callback(sender: int, data: bytearray):
                 log.warning(colored("{}: {}".format(sender, data.hex()), "green"))
@@ -464,7 +467,7 @@ class goproControl:
         if len(cameras) == 1:
             print(colored("Connecting to " +
                             cameras[0][1], "green", attrs=["bold"]))
-            address = [cameras[0][1]]
+            address = [cameras[0][1]][0]
         else:
             for index, i in enumerate(cameras):
                 print(
@@ -473,6 +476,7 @@ class goproControl:
 
 
     def runForSeconds(self, seconds):
+        print (address)
         asyncio.run(self.run(address, self.COMMAND_START_RECORD, True))
         print('Starting sleep')
         asyncio.sleep(seconds)
