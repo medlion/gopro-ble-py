@@ -446,7 +446,7 @@ class goproControl:
                 else:
                     log.error("Unrecognized command %s" % cmd)
 
-    async def discovercameras():
+    async def discovercameras(self):
         cameras = []
         devices = await discover()
         global address
