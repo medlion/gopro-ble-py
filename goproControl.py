@@ -371,7 +371,7 @@ class goproControl:
                 await client.write_gatt_char(commands.Characteristics.ControlCharacteristic, start_mode)
             await client.write_gatt_char(commands.Characteristics.ControlCharacteristic, commands.Commands.Analytics.SetThirdPartyClient)
             await asyncio.sleep(1.0)
-            signal.signal(signal.SIGINT, handle_exit)
+            signal.signal(signal.SIGINT, self.handle_exit)
     
             if command_to_run is not None:
                 if command_to_run in commands_supported["command"]:
@@ -476,11 +476,11 @@ class goproControl:
 
 
     def runForSeconds(self, seconds):
-        asyncio.run(self.run(address, self.COMMAND_START_RECORD, True))
+        asyncio.run(self.run(address, COMMAND_START_RECORD, True))
         print('Starting sleep')
         sleep(seconds)
         print('Waking up')
-        asyncio.run(self.run(address, self.COMMAND_STOP_RECORD, True))
+        asyncio.run(self.run(address, COMMAND_STOP_RECORD, True))
 
 
     def __init__ (self):
