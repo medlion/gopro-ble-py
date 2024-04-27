@@ -467,15 +467,13 @@ class goproControl:
                     colored("[{}] {} - {}".format(index, i[0], i[1]), "cyan"))
             address = [cameras[int(input(">>> "))][1]]
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(discovercameras())
-
 
     def runForSeconds(self, seconds):
         print('hello')
 
     def __init__ (self):
-        self.discovercameras()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.discovercameras())
 
 
 
