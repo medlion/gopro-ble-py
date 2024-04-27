@@ -477,11 +477,11 @@ class goproControl:
 
     def runForSeconds(self, seconds):
         print (address)
-        asyncio.run(self.run(address, self.COMMAND_START_RECORD, True))
+        asyncio.run(self.run(address, COMMAND_START_RECORD, True))
         print('Starting sleep')
         asyncio.sleep(seconds)
         print('Waking up')
-        asyncio.run(self.run(address, self.COMMAND_STOP_RECORD, True))
+        asyncio.run(self.run(address, COMMAND_STOP_RECORD, True))
 
 
     def __init__ (self):
